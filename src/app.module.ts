@@ -15,20 +15,23 @@ import { Task } from './tasks/entities/task.entity';
       isGlobal: true,
     }),
     TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
-      useFactory: (configService: ConfigService) => ({
-        type: 'postgres',
-        url: configService.get<string>('DATABASE_URL'),
-        entities: [User, Project, Task],
-        synchronize: true, // Only for development
-        ssl: configService.get<string>('RENDER') === 'true',
-        extra: configService.get<string>('RENDER') === 'true' ? {
-          ssl: {
+  imports: [ConfigModule],
+  useFactory: (configService: ConfigService) => {
+    const isRender = configService.get<string>('RENDER') === 'true';
+
+    return {
+      type: 'postgres',
+      url: configService.get<string>('DATABASE_URL'),
+      entities: [User, Project, Task],
+      synchronize: true,
+      ssl: isRender
+        ? {
             rejectUnauthorized: false,
-          },
-        } : {},
-      }),
-      inject: [ConfigService],
+          }
+        : false,
+    };
+  },
+  inject: [ConfigService],
     }),
     AuthModule,
     UsersModule,
