@@ -24,11 +24,12 @@ import { Task } from './tasks/entities/task.entity';
       url: configService.get<string>('DATABASE_URL'),
       entities: [User, Project, Task],
       synchronize: true,
-      ssl: isRender
-        ? {
-            rejectUnauthorized: false,
-          }
-        : false,
+      ssl: isRender,
+      extra: isRender ? {
+        ssl: {
+          rejectUnauthorized: false,
+        },
+      } : {},
     };
   },
   inject: [ConfigService],
