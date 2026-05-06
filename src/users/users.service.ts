@@ -12,6 +12,9 @@ export class UsersService {
   ) {}
 
   async create(data: Partial<User>): Promise<User> {
+    if (!data.password) {
+      throw new Error('Password is required');
+    }
     const hashedPassword = await bcrypt.hash(data.password, 10);
     const user = this.usersRepository.create({
       ...data,
@@ -20,14 +23,14 @@ export class UsersService {
     return this.usersRepository.save(user);
   }
 
-  async findByEmail(email: string): Promise<User | undefined> {
+  async findByEmail(email: string): Promise<User | null> {
     return this.usersRepository.findOne({
       where: { email },
       select: ['id', 'name', 'email', 'password', 'role', 'createdAt'],
     });
   }
 
-  async findById(id: number): Promise<User | undefined> {
+  async findById(id: number): Promise<User | null> {
     return this.usersRepository.findOneBy({ id });
   }
 }
