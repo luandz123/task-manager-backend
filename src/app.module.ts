@@ -21,6 +21,9 @@ import { Task } from './tasks/entities/task.entity';
         url: configService.get<string>('DATABASE_URL'),
         entities: [User, Project, Task],
         synchronize: true, // Only for development
+        ssl: configService.get<string>('NODE_ENV') === 'production' || configService.get<string>('RENDER') === 'true'
+          ? { rejectUnauthorized: false }
+          : false,
       }),
       inject: [ConfigService],
     }),
