@@ -17,19 +17,14 @@ import { Task } from './tasks/entities/task.entity';
     TypeOrmModule.forRootAsync({
   imports: [ConfigModule],
   useFactory: (configService: ConfigService) => {
-    const isRender = configService.get<string>('RENDER') === 'true';
+    const isRender = configService.get<string>('RENDER') === 'true' || !!configService.get<string>('RENDER');
 
     return {
       type: 'postgres',
       url: configService.get<string>('DATABASE_URL'),
       entities: [User, Project, Task],
       synchronize: true,
-      ssl: isRender,
-      extra: isRender ? {
-        ssl: {
-          rejectUnauthorized: false,
-        },
-      } : {},
+      ssl: isRender ? { rejectUnauthorized: false } : false,
     };
   },
   inject: [ConfigService],
